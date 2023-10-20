@@ -10,6 +10,7 @@
     - [Enable executable permission](#enable-executable-permission)
     - [Enable binary into your default PATH](#enable-binary-into-your-default-path)
   - [Simple run the app or decalre the ENV\_VARS during the execution](#simple-run-the-app-or-decalre-the-env_vars-during-the-execution)
+    - [Check the job](#check-the-job)
 
 
 # Description
@@ -56,3 +57,6 @@ export AWS_ROLE_ARN="YOUR_AWS_ROLE_ARN" \
 export AWS_KMS_KEY_ID="YOUR KMS KEY" \
 levi-db-export
 ```
+### Check the job
+If you're logged on AWS, you can check your job here, remember to change your region if needed:
+https://us-east-1.console.aws.amazon.com/rds/home?region=us-east-1#exports-in-s3:
