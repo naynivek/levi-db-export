@@ -1,3 +1,6 @@
+# Table of contents
+
+- [Table of contents](#table-of-contents)
 - [Description](#description)
 - [Cloud Support](#cloud-support)
 - [Getting Started](#getting-started)
