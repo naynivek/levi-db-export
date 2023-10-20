@@ -1,4 +1,4 @@
-module kyan.fsl/getinfo
+module github.com/naynivek/levi-db-export/getinfo
 
 go 1.20
 
