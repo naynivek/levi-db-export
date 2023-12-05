@@ -1,4 +1,4 @@
-package getInfo
+package getSnapshot
 
 import (
 	"context"

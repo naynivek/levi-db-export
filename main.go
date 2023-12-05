@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"os"
 	"time"
-	"github.com/naynivek/levi-db-export/getInfo"
+	"github.com/naynivek/levi-db-export/getSnapshot"
 	"github.com/naynivek/levi-db-export/exportSnapshot"
 )
 
