@@ -9,7 +9,8 @@ import (
 	"github.com/google/uuid"
 	"os"
 	"time"
-	"github.com/naynivek/levi-db-export/getinfo"
+	"github.com/naynivek/levi-db-export/getInfo"
+	"github.com/naynivek/levi-db-export/exportSnapshot"
 )
 
 func main() {
@@ -71,14 +72,16 @@ func main() {
 		log.Println("Start the app using this web credential: ",credentialSet)
 	}
 
-// Configure rds client
+// Configure RDS client
 	rdsClient := rds.NewFromConfig(cfg)
+// Get Snapshot info
 	snapshotName, err := getinfo.GetSnapshot(rdsClient, DB_NAME)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Snapshot name: ", *snapshotName.DBSnapshotArn)
-	exportTask, err := getinfo.ExportSnapshot(rdsClient,*snapshotName.DBSnapshotArn,EXPORT_JOB_NAME,AWS_ROLE_ARN,AWS_KMS_KEY_ID,AWS_S3_PREFIX,BUCKET_NAME)
+// Run the export to s3 task
+	exportTask, err := exportSnapshot.ExportSnapshot(rdsClient,*snapshotName.DBSnapshotArn,EXPORT_JOB_NAME,AWS_ROLE_ARN,AWS_KMS_KEY_ID,AWS_S3_PREFIX,BUCKET_NAME)
 	log.Println("Task name: ", *exportTask)
 }
 // adicionar testIdentifier dinâmico e prefixo do s3

@@ -18,5 +18,6 @@ require (
 	github.com/aws/smithy-go v1.15.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/naynivek/levi-db-export/exportSnapshot v0.0.1 // indirect
 	github.com/naynivek/levi-db-export/getinfo v0.0.2 // indirect
 )

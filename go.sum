@@ -39,6 +39,8 @@ github.com/google/uuid v1.3.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
 github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
 github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=
+github.com/naynivek/levi-db-export/exportSnapshot v0.0.1 h1:x5CI/Cxyfj4ykI9w/wnQ/b7L4CGOu1GkRyC8wB5t/DU=
+github.com/naynivek/levi-db-export/exportSnapshot v0.0.1/go.mod h1:ZL7t9iJKNT5IZATFzpwPEmt/t1KbzUGnzf5Ic8oxlT0=
 github.com/naynivek/levi-db-export/getinfo v0.0.2 h1:tod110i1G9shdFp3OD1/XxANXMTprAvTRoKdAyhpC9g=
 github.com/naynivek/levi-db-export/getinfo v0.0.2/go.mod h1:6P1awluOJijN673V3OFq9sLRcNZCqWEMX1avrmns0CA=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
