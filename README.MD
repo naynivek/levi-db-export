@@ -39,6 +39,10 @@ export DB_NAME="YOUR_DATABASE_NAME"
 export AWS_ROLE_ARN="YOUR_AWS_ROLE_ARN"
 export AWS_KMS_KEY_ID="YOUR KMS KEY"
 ```
+If you are running on a environment that uses WebIdentityToken, please add this var.
+```bash
+export CREDS="web"
+```
 ### Enable executable permission
 Enable the executable permission in the binary
 ```bash

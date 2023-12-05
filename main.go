@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/google/uuid"
 	"os"
@@ -19,6 +20,7 @@ func main() {
 	AWS_ROLE_ARN :=os.Getenv("AWS_ROLE_ARN")
 	AWS_KMS_KEY_ID :=os.Getenv("AWS_KMS_KEY_ID")
 	AWS_S3_PREFIX :=os.Getenv("AWS_S3_PREFIX")
+	CREDS :=os.Getenv("CREDS")
 //Verify variables
 	if BUCKET_NAME == "" {
 		log.Fatal("Missing BUCKET_NAME environment variable")
@@ -39,6 +41,9 @@ func main() {
 	if AWS_KMS_KEY_ID == "" {
 		log.Fatal("Missing AWS_KMS_KEY_ID environment variable")
 	}
+	if CREDS == "" {
+		log.Println("Missing CREDS environment variable, using default configuration only")
+	}
 	if AWS_S3_PREFIX == "" {
 		log.Println("Missing AWS_S3_PREFIX environment variable")
 		log.Println("Creating a database and date for it")
@@ -54,10 +59,24 @@ func main() {
 	}
 	credentialSet := cfg.Credentials
 	log.Println("Start the app using this credential: ",credentialSet)
+	if CREDS == "web" {
+		cfg, err = config.LoadDefaultConfig(context.TODO(),
+		config.WithWebIdentityRoleCredentialOptions(func(options *stscreds.WebIdentityRoleOptions) {
+			options.RoleSessionName = "levi-db-export-go"
+		}))
+		if err != nil {
+			log.Fatal(err)
+		}
+		credentialSet := cfg.Credentials
+		log.Println("Start the app using this web credential: ",credentialSet)
+	}
 
 // Configure rds client
 	rdsClient := rds.NewFromConfig(cfg)
 	snapshotName, err := getinfo.GetSnapshot(rdsClient, DB_NAME)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println("Snapshot name: ", *snapshotName.DBSnapshotArn)
 	exportTask, err := getinfo.ExportSnapshot(rdsClient,*snapshotName.DBSnapshotArn,EXPORT_JOB_NAME,AWS_ROLE_ARN,AWS_KMS_KEY_ID,AWS_S3_PREFIX,BUCKET_NAME)
 	log.Println("Task name: ", *exportTask)
