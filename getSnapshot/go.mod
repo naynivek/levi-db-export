@@ -1,4 +1,4 @@
-module github.com/naynivek/levi-db-export/getinfo
+module github.com/naynivek/levi-db-export/getSnapshot
 
 go 1.20
 
