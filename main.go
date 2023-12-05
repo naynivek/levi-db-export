@@ -11,17 +11,23 @@ import (
 	"time"
 	"github.com/naynivek/levi-db-export/getSnapshot"
 	"github.com/naynivek/levi-db-export/exportSnapshot"
+	"github.com/naynivek/levi-db-export/copySnapshot"
 )
 
 func main() {
 //Set variables
+	COPY := "false"
+	S3_EXPORT := "false"
 	BUCKET_NAME := os.Getenv("BUCKET_NAME")
-	DB_NAME :=os.Getenv("DB_NAME")
-	EXPORT_JOB_NAME :=os.Getenv("EXPORT_JOB_NAME")
-	AWS_ROLE_ARN :=os.Getenv("AWS_ROLE_ARN")
-	AWS_KMS_KEY_ID :=os.Getenv("AWS_KMS_KEY_ID")
-	AWS_S3_PREFIX :=os.Getenv("AWS_S3_PREFIX")
-	CREDS :=os.Getenv("CREDS")
+	DB_NAME := os.Getenv("DB_NAME")
+	EXPORT_JOB_NAME := os.Getenv("EXPORT_JOB_NAME")
+	AWS_ROLE_ARN := os.Getenv("AWS_ROLE_ARN")
+	AWS_KMS_KEY_ID := os.Getenv("AWS_KMS_KEY_ID")
+	AWS_KMS_KEY_ID_DST := os.Getenv("AWS_KMS_KEY_ID_DST")
+	AWS_S3_PREFIX := os.Getenv("AWS_S3_PREFIX")
+	CREDS := os.Getenv("CREDS")
+	COPY = os.Getenv("COPY")
+	S3_EXPORT = os.Getenv("S3_EXPORT")
 //Verify variables
 	if BUCKET_NAME == "" {
 		log.Fatal("Missing BUCKET_NAME environment variable")
@@ -41,6 +47,9 @@ func main() {
 	}
 	if AWS_KMS_KEY_ID == "" {
 		log.Fatal("Missing AWS_KMS_KEY_ID environment variable")
+	}
+	if AWS_KMS_KEY_ID_DST == "" {
+		log.Fatal("Missing AWS_KMS_KEY_ID_DST environment variable")
 	}
 	if CREDS == "" {
 		log.Println("Missing CREDS environment variable, using default configuration only")
@@ -75,14 +84,38 @@ func main() {
 // Configure RDS client
 	rdsClient := rds.NewFromConfig(cfg)
 // Get Snapshot info
-	snapshotName, err := getinfo.GetSnapshot(rdsClient, DB_NAME)
+	snapshotName, err := getSnapshot.GetSnapshot(rdsClient, DB_NAME)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Snapshot name: ", *snapshotName.DBSnapshotArn)
+// Run the copy to another region
+	if COPY == "true" {
+		cfg2, err := config.LoadDefaultConfig(context.TODO(),
+					config.WithRegion("us-east-2"))
+		if err != nil {
+		log.Fatal(err)
+		}
+		rdsClient2 := rds.NewFromConfig(cfg2)
+		currentTime := time.Now()
+		destinationSnapshotName := *snapshotName.DBInstanceIdentifier+"-snapshot-destination-"+currentTime.Format("01-02-2006")
+		copyTask, err := copySnapshot.CopySnapshot(rdsClient2, *snapshotName.DBSnapshotArn, destinationSnapshotName, AWS_KMS_KEY_ID_DST)
+		log.Println("Copy is enabled")
+		log.Println("Snapshot ARN: ", *copyTask.DBSnapshot.DBSnapshotArn)
+	} else {
+		log.Println("Copy is disabled")
+	}
 // Run the export to s3 task
-	exportTask, err := exportSnapshot.ExportSnapshot(rdsClient,*snapshotName.DBSnapshotArn,EXPORT_JOB_NAME,AWS_ROLE_ARN,AWS_KMS_KEY_ID,AWS_S3_PREFIX,BUCKET_NAME)
-	log.Println("Task name: ", *exportTask)
+	if S3_EXPORT == "true" {
+		exportTask, err := exportSnapshot.ExportSnapshot(rdsClient,*snapshotName.DBSnapshotArn,EXPORT_JOB_NAME,AWS_ROLE_ARN,AWS_KMS_KEY_ID,AWS_S3_PREFIX,BUCKET_NAME)
+		if err != nil {
+			log.Fatal(err)
+			}
+		log.Println("Export to s3 is enabled")
+		log.Println("Task identifier: ", *exportTask.ExportTaskIdentifier)
+	} else {
+		log.Println("Export to s3 is disabled")
+	}
 }
 // adicionar testIdentifier dinâmico e prefixo do s3
 // *exportTask.SourceType
