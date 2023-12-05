@@ -7,11 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/rds"
 )
 
-func CopySnapshot(rdsClient *rds.Client, SourceSnapshotArn,TargetSnapshotName,src_region,dst_region string) (*rds.CopyDBSnapshotOutput, error) {
+func CopySnapshot(rdsClient *rds.Client, SourceSnapshotArn,TargetSnapshotName string) (*rds.CopyDBSnapshotOutput, error) {
 	output, err := rdsClient.CopyDBSnapshot(context.TODO(),
 		&rds.CopyDBSnapshotInput{
-			SourceRegion: aws.String(src_region),
-			DestinationRegion: aws.String(dst_region),
 			SourceDBSnapshotIdentifier: aws.String(SourceSnapshotArn),
 			TargetDBSnapshotIdentifier: aws.String(TargetSnapshotName),
 		})
