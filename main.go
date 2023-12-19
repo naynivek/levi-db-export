@@ -12,6 +12,7 @@ import (
 	"github.com/naynivek/levi-db-export/getSnapshot"
 	"github.com/naynivek/levi-db-export/exportSnapshot"
 	"github.com/naynivek/levi-db-export/copySnapshot"
+	"github.com/slack-go/slack"
 )
 
 func main() {
@@ -24,10 +25,14 @@ func main() {
 	AWS_ROLE_ARN := os.Getenv("AWS_ROLE_ARN")
 	AWS_KMS_KEY_ID := os.Getenv("AWS_KMS_KEY_ID")
 	AWS_KMS_KEY_ID_DST := os.Getenv("AWS_KMS_KEY_ID_DST")
+	AWS_REGION_DST := os.Getenv("AWS_REGION_DST")
 	AWS_S3_PREFIX := os.Getenv("AWS_S3_PREFIX")
 	CREDS := os.Getenv("CREDS")
 	COPY = os.Getenv("COPY")
 	S3_EXPORT = os.Getenv("S3_EXPORT")
+	SLACK_NOTIFY := os.Getenv("SLACK_NOTIFY")
+	SLACK_TOKEN := os.Getenv("SLACK_TOKEN")
+	SLACK_CHANNEL_ID := os.Getenv("SLACK_CHANNEL_ID")
 //Verify variables
 	if BUCKET_NAME == "" {
 		log.Fatal("Missing BUCKET_NAME environment variable")
@@ -92,7 +97,7 @@ func main() {
 // Run the copy to another region
 	if COPY == "true" {
 		cfg2, err := config.LoadDefaultConfig(context.TODO(),
-					config.WithRegion("us-east-2"))
+					config.WithRegion(AWS_REGION_DST))
 		if err != nil {
 		log.Fatal(err)
 		}
@@ -102,6 +107,20 @@ func main() {
 		copyTask, err := copySnapshot.CopySnapshot(rdsClient2, *snapshotName.DBSnapshotArn, destinationSnapshotName, AWS_KMS_KEY_ID_DST)
 		log.Println("Copy is enabled")
 		log.Println("Snapshot ARN: ", *copyTask.DBSnapshot.DBSnapshotArn)
+		// Run the Slack notification
+		if SLACK_NOTIFY == "true" {
+			log.Printf("Sending the notification message to channel %s", SLACK_CHANNEL_ID)
+			api := slack.New(SLACK_TOKEN)
+			message := "The snapshot "+*snapshotName.DBSnapshotIdentifier+" has been copied to "+AWS_REGION_DST+" : https://us-east-2.console.aws.amazon.com/rds/home?region=us-east-2#db-snapshot:engine=postgres;id="+*copyTask.DBSnapshot.DBSnapshotIdentifier
+			channelID, timestamp, err := api.PostMessage(
+				SLACK_CHANNEL_ID,
+				slack.MsgOptionText(message, false),)
+			if err != nil {
+				log.Printf("%s\n", err)
+				return
+			}
+			log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+		}
 	} else {
 		log.Println("Copy is disabled")
 	}
@@ -113,6 +132,19 @@ func main() {
 			}
 		log.Println("Export to s3 is enabled")
 		log.Println("Task identifier: ", *exportTask.ExportTaskIdentifier)
+		if SLACK_NOTIFY == "true" {
+			log.Printf("Sending the notification message to channel %s", SLACK_CHANNEL_ID)
+			api := slack.New(SLACK_TOKEN)
+			message := "The database "+DB_NAME+" it has been exported to "+BUCKET_NAME+" : https://us-east-1.console.aws.amazon.com/rds/home?region=us-east-1#export-task:id="+*exportTask.ExportTaskIdentifier+";source-location=exports-in-s3"
+			channelID, timestamp, err := api.PostMessage(
+				SLACK_CHANNEL_ID,
+				slack.MsgOptionText(message, false),)
+			if err != nil {
+				log.Printf("%s\n", err)
+				return
+			}
+			log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+		}
 	} else {
 		log.Println("Export to s3 is disabled")
 	}

@@ -17,9 +17,11 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.2 // indirect
 	github.com/aws/smithy-go v1.15.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/naynivek/levi-db-export/copySnapshot v0.0.3 // indirect
 	github.com/naynivek/levi-db-export/exportSnapshot v0.0.1 // indirect
 	github.com/naynivek/levi-db-export/getSnapshot v0.0.2 // indirect
 	github.com/naynivek/levi-db-export/getinfo v0.0.2 // indirect
+	github.com/slack-go/slack v0.12.3 // indirect
 )
