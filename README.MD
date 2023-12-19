@@ -4,15 +4,15 @@
 - [Description](#description)
 - [Cloud Support](#cloud-support)
 - [Getting Started](#getting-started)
-  - [How to install](#how-to-install)
-  - [Prerequisites](#prerequisites)
-    - [Environment Variables](#environment-variables)
-    - [Enable executable permission](#enable-executable-permission)
-    - [Enable binary into your default PATH](#enable-binary-into-your-default-path)
-  - [Authorization](#authorization)
-  - [Simple run the app or declare the ENV\_VARS during the execution](#simple-run-the-app-or-declare-the-env_vars-during-the-execution)
-    - [Check the s3 export task](#check-the-s3-export-task)
-    - [Check the snapshot copy task](#check-the-snapshot-copy-task)
+	- [How to install](#how-to-install)
+	- [Prerequisites](#prerequisites)
+		- [Environment Variables](#environment-variables)
+		- [Enable executable permission](#enable-executable-permission)
+		- [Enable binary into your default PATH](#enable-binary-into-your-default-path)
+	- [Authorization](#authorization)
+	- [Simple run the app or declare the ENV\_VARS during the execution](#simple-run-the-app-or-declare-the-env_vars-during-the-execution)
+		- [Check the s3 export task](#check-the-s3-export-task)
+		- [Check the snapshot copy task](#check-the-snapshot-copy-task)
 
 
 # Description
@@ -45,6 +45,9 @@ Before run the app you need to have this environment variables into your termina
 7. CREDS -> for using WebIdentityToken as an authentication method (optional)
 8. COPY -> for enable the snapshot copy feature
 9. S3_EXPORT -> for enable the s3 export feature
+10. SLACK_NOTIFY -> for enable the Slack notification feature
+11. SLACK_TOKEN -> Slack API_TOKEN (Needs SLACK_NOTIFY as "true")
+12. SLACK_CHANNEL_ID -> Slack Channel ID (Needs SLACK_NOTIFY as "true")
 Here's the basic command
 ```bash
 export BUCKET_NAME="YOUR_BUCKET_NAME"
